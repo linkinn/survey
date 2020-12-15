@@ -6,6 +6,7 @@
     "plugins": ["@typescript-eslint"],
     "rules": {
         "@typescript-eslint/rule-name": "off",
-        "@typescript-eslint/no-redeclare": "off"
+        "@typescript-eslint/no-redeclare": "off",
+        "@typescript-eslint/strict-boolean-expressions": "off"
     }
 }
