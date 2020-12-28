@@ -1,23 +1,37 @@
+import { Encrypter } from '../../protocol/encrypter'
 import { DbAddAccount } from './db-add-account'
 
-describe('DbAddAccount Usecases', () => {
-  test('should call Encrypter with correct password', () => {
-    class EncrypterStub {
-      async encrypt(value: string): Promise<string> {
-        return new Promise((resolve) => resolve('hashed_password'))
-      }
-    }
+interface SubTypes {
+  sut: DbAddAccount
+  encrypterStub: Encrypter
+}
 
-    const encrypterStub = new EncrypterStub()
-    const sut = new DbAddAccount(encrypterStub)
+const makeSut = (): SubTypes => {
+  class EncrypterStub {
+    async encrypt(value: string): Promise<string> {
+      return new Promise((resolve) => resolve('hashed_password'))
+    }
+  }
+
+  const encrypterStub = new EncrypterStub()
+  const sut = new DbAddAccount(encrypterStub)
+
+  return {
+    sut,
+    encrypterStub
+  }
+}
+
+describe('DbAddAccount Usecases', () => {
+  test('should call Encrypter with correct password', async () => {
+    const { sut, encrypterStub } = makeSut()
     const encryptSpy = jest.spyOn(encrypterStub, 'encrypt')
     const accountData = {
       name: 'valid_name',
       email: 'valid_email',
       password: 'valid_password'
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    sut.add(accountData)
+    await sut.add(accountData)
     expect(encryptSpy).toHaveBeenCalledWith('valid_password')
   })
 })
